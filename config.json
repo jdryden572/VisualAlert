@@ -1,0 +1,78 @@
+{
+    "lightStates": {
+        "greenYellow": {
+            "xy": [
+                0.7,
+                0.7
+            ],
+            "transitiontime": 4,
+            "bri": 200,
+            "sat": 255,
+            "on": true
+        },
+        "allOn": {
+            "transitiontime": 2,
+            "bri": 50,
+            "ct": 250,
+            "sat": 255,
+            "on": true
+        },
+        "yellow": {
+            "xy": [
+                0.55,
+                0.46
+            ],
+            "transitiontime": 4,
+            "bri": 200,
+            "sat": 255,
+            "on": true
+        },
+        "noConnect": {
+            "xy": [
+                0.6,
+                0.0
+            ],
+            "transitiontime": 4,
+            "bri": 150,
+            "sat": 255,
+            "on": true
+        },
+        "green": {
+            "xy": [
+                0.5,
+                0.8
+            ],
+            "transitiontime": 4,
+            "bri": 150,
+            "sat": 255,
+            "on": true
+        },
+        "red": {
+            "xy": [
+                0.8,
+                0.3
+            ],
+            "transitiontime": 4,
+            "bri": 200,
+            "sat": 255,
+            "on": true
+        },
+        "orange": {
+            "xy": [
+                0.7,
+                0.4
+            ],
+            "transitiontime": 4,
+            "bri": 200,
+            "sat": 255,
+            "on": true
+        },
+        "allOff": {
+            "on": false
+        }
+    },
+    "phoneQueueURL": "http://osi-cc100:9080/stats",
+    "delayTime": 1,
+    "callPattern": "(\\d*) ready .* (\\d*) CALLS WAITING FOR (\\d*):(\\d*)",
+    "manualBridgeIP": null
+}
