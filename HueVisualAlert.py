@@ -39,7 +39,7 @@ config = {
 	'manualBridgeIP': None,
 	'delayTime': 1,
 	'phoneQueueURL': 'http://osi-cc100:9080/stats',
-	'callPattern': r'(\d*) ready .* (\d*) CALLS WAITING FOR (\d*):(\d*)',
+	'callPattern': r'(\d*) ready .*?(\d*) CALLS WAITING FOR (\d*):(\d*)',
 	'lightStates': 
 		{
 		'red': 			{'on': True, 'bri': 200, 'sat': 255, 'transitiontime': 4, 'xy': [0.8, 0.3]},
@@ -80,7 +80,7 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		huecontroller.BaseURLMonitor.__init__(self, controller)
 		self.URL = config['phoneQueueURL']
 		callPattern = config['callPattern']
-		self.callPatternCompiled = re.compile(callPattern)
+		self.callPatternCompiled = re.compile(callPattern, re.DOTALL)
 		self.states = config['lightStates']
 		self.state = self.states['allOn']
 		self.status = ''
@@ -101,7 +101,6 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		rawData = str(self.open_url(self.URL))
 		try:
 			ready, calls, minutes, seconds = self.callPatternCompiled.search(rawData).groups()
-			print(ready)
 		except:
 			logger.warning('CANNOT CONNECT TO PHONE QUEUE STATUS PAGE')
 			logger.warning('URL: {} Check network connection and destination URL.'.format(self.URL))
