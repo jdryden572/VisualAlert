@@ -47,6 +47,7 @@ config = {
 		'yellow':		{'on': True, 'bri': 200, 'sat': 255, 'transitiontime': 4, 'xy': [0.55, 0.46]},
 		'greenYellow':	{'on': True, 'bri': 200, 'sat': 255, 'transitiontime': 4, 'xy': [0.7, 0.7]},
 		'green':		{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.5, 0.8]},
+		'blue':			{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.1, 0.0]},
 		'allOn':		{'on': True, 'bri':  50, 'sat': 255, 'transitiontime': 2, 'ct': 250},
 		'noConnect':	{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.6, 0.0]},
 		'allOff':		{'on': False}
@@ -123,12 +124,11 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		"""Choose the Hue light state based on the point count and whether the 
 		connection has been lost.
 		"""
-		
 		if connectionFailure:
 			return self.states['noConnect']
 		elif points == 0 and ready:
 			return self.states['blue']
-		elif points == 0 and not ready:
+		elif points == 0:
 			return self.states['green']
 		elif points >  0 and points < 4:
 			return self.states['greenYellow']

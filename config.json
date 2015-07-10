@@ -1,78 +1,88 @@
 {
     "delayTime": 1,
-    "callPattern": "(\\d*) ready .*?(\\d*) CALLS WAITING FOR (\\d*):(\\d*)",
-    "manualBridgeIP": null,
-    "phoneQueueURL": "http://osi-cc100:9080/stats",
     "lightStates": {
+        "allOff": {
+            "on": false
+        },
+        "allOn": {
+            "transitiontime": 2,
+            "bri": 50,
+            "ct": 250,
+            "on": true,
+            "sat": 255
+        },
         "greenYellow": {
+            "transitiontime": 4,
+            "bri": 200,
             "xy": [
                 0.7,
                 0.7
             ],
-            "bri": 200,
-            "sat": 255,
             "on": true,
-            "transitiontime": 4
-        },
-        "red": {
-            "xy": [
-                0.8,
-                0.3
-            ],
-            "bri": 200,
-            "sat": 255,
-            "on": true,
-            "transitiontime": 4
+            "sat": 255
         },
         "noConnect": {
+            "transitiontime": 4,
+            "bri": 150,
             "xy": [
                 0.6,
                 0.0
             ],
-            "bri": 150,
-            "sat": 255,
             "on": true,
-            "transitiontime": 4
+            "sat": 255
         },
-        "yellow": {
-            "xy": [
-                0.55,
-                0.46
-            ],
+        "red": {
+            "transitiontime": 4,
             "bri": 200,
-            "sat": 255,
+            "xy": [
+                0.8,
+                0.3
+            ],
             "on": true,
-            "transitiontime": 4
-        },
-        "allOff": {
-            "on": false
+            "sat": 255
         },
         "green": {
+            "transitiontime": 4,
+            "bri": 150,
             "xy": [
                 0.5,
                 0.8
             ],
-            "bri": 150,
-            "sat": 255,
             "on": true,
-            "transitiontime": 4
+            "sat": 255
+        },
+        "blue": {
+            "transitiontime": 4,
+            "bri": 150,
+            "xy": [
+                0.1,
+                0.0
+            ],
+            "on": true,
+            "sat": 255
+        },
+        "yellow": {
+            "transitiontime": 4,
+            "bri": 200,
+            "xy": [
+                0.55,
+                0.46
+            ],
+            "on": true,
+            "sat": 255
         },
         "orange": {
+            "transitiontime": 4,
+            "bri": 200,
             "xy": [
                 0.7,
                 0.4
             ],
-            "bri": 200,
-            "sat": 255,
             "on": true,
-            "transitiontime": 4
-        },
-        "allOn": {
-            "bri": 50,
-            "sat": 255,
-            "on": true,
-            "transitiontime": 2,
-            "ct": 250
+            "sat": 255
         }
-    }
+    },
+    "phoneQueueURL": "http://osi-cc100:9080/stats",
+    "callPattern": "(\\d*) ready .*?(\\d*) CALLS WAITING FOR (\\d*):(\\d*)",
+    "manualBridgeIP": null
 }

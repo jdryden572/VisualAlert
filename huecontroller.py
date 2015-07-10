@@ -6,7 +6,7 @@ OSIsoft, LLC
 
 July 2014
 
-Controller program fo an implementation of Philips Hue as a status indicator.
+Controller program for an implementation of Philips Hue as a status indicator.
 
 "Hue Personal Wireless Lighting" is a trademark owned by 
 Philips Electronics N.V. See www.meethue.com for more information.
@@ -110,7 +110,7 @@ class HueController(object):
 		
 		if self.hue:
 			pass
-			#self.get_new_lights()									#UNCOMMENT WHEN DONE, YOU DUMMY
+			self.get_new_lights()									
 		else:
 			logger.critical('Unable to connect to Bridge.')
 			exit('Quitting.')
@@ -211,9 +211,8 @@ class HueController(object):
 		"""Accepts a state (type: dictionary) and applies it to all Hue lights."""
 		logger.debug('Setting lights to {}'.format(state))
 		try:
-			#response = self.hue.set_group(0, state)
-			response = "Response would come here."
-			#logger.debug(response)
+			response = self.hue.set_group(0, state)
+			logger.debug(response)
 		except Exception as e:
 			logger.error('Received Exception, {}'.format(e))
 			logger.error('Unable to connect to Hue Bridge. Check network connection.')
