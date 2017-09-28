@@ -20,6 +20,8 @@ import json
 import re
 import warnings
 import logging
+# import requests
+# from requests_negotiate_sspi import HttpNegotiateAuth
 try: 
 	import phue
 except:
@@ -41,6 +43,17 @@ class BaseURLMonitor(object):
 		"""Constructor.  May be overridden."""		
 		self.controller = controller
 		self.standby = False
+		# self.session = requests.Session()
+		# self.session.auth = HttpNegotiateAuth()
+	
+	# def open_url(self, URL):
+		# """Returns raw data from given URL."""
+		# try:
+			# response = self.session.get(URL)
+			# return response
+		# except Exception as e:
+			# logger.warning('Received Exception: {}'.format(e))
+			# return None
 		
 	def execute(self):
 		"""Should be overridden by child class."""
@@ -81,55 +94,55 @@ class HueController(object):
 		Once connected, instruct Bridge to search for new lights using 
 		get_new_lights().
 		"""
-		pass
-		# self.IP = ip
-		# self.userName = username
-		# self.hue = None
+	
+		self.IP = ip
+		self.userName = username
+		self.hue = None
 		
-		# if self.IP:
-			# logger.info('Using IP: {}'.format(self.IP))
-			# self.hue = self.connect(self.IP)
-			# if self.hue is None:
-				# logger.warning('Given IP failed. Finding IP automatically...')
-				# self.IP = self.get_bridge_IP()
-				# logger.info('Found IP: {}'.format(self.IP))
-				# self.hue = self.connect(self.IP)
-		# self.IP = self.get_bridge_IP()
-		# logger.info('Found IP: {}'.format(self.IP))
-		# self.hue = self.connect(self.IP)
+		if self.IP:
+			logger.info('Using IP: {}'.format(self.IP))
+			self.hue = self.connect(self.IP)
+			if self.hue is None:
+				logger.warning('Given IP failed. Finding IP automatically...')
+				self.IP = self.get_bridge_IP()
+				logger.info('Found IP: {}'.format(self.IP))
+				self.hue = self.connect(self.IP)
+		self.IP = self.get_bridge_IP()
+		logger.info('Found IP: {}'.format(self.IP))
+		self.hue = self.connect(self.IP)
 		
-		# if self.hue:
-			# pass
-			# self.get_new_lights()									
-		# else:
-			# logger.critical('Unable to connect to Bridge.')
-			# exit('Quitting.')
+		if self.hue:
+			pass
+			self.get_new_lights()									
+		else:
+			logger.critical('Unable to connect to Bridge.')
+			exit('Quitting.')
 
 	def connect(self, IP):
 		"""Attempts to connect to Bridge"""
-		pass
-		# if not self.userName: 
-			# self.userName = 'newdeveloper'
-		# hue = phue.Bridge(ip=IP, username=self.userName)
-		# try:
-			# test = hue.get_api()
-			# logger.info('Found Bridge at {0}'.format(IP))
-			# if isinstance(test, dict):
-				# return hue
-			# elif isinstance(test, list):
-				# logger.warning(
-					# 'Username unregistered. Attempting to register username "{}"'.format(
-						# self.userName))
-				# connected = self.register_user()
-				# if connected:
-					# logger.warning('Username "{}" successfully registered.'.format(
-						# self.userName))
-					# return hue
-				# else:
-					# logger.critical('Unable to register with hue. Attempt manual registration.')
-					# return None	
-		# except: 
-			# return None
+		
+		if not self.userName: 
+			self.userName = 'newdeveloper'
+		hue = phue.Bridge(ip=IP, username=self.userName)
+		try:
+			test = hue.get_api()
+			logger.info('Found Bridge at {0}'.format(IP))
+			if isinstance(test, dict):
+				return hue
+			elif isinstance(test, list):
+				logger.warning(
+					'Username unregistered. Attempting to register username "{}"'.format(
+						self.userName))
+				connected = self.register_user()
+				if connected:
+					logger.warning('Username "{}" successfully registered.'.format(
+						self.userName))
+					return hue
+				else:
+					logger.critical('Unable to register with hue. Attempt manual registration.')
+					return None	
+		except: 
+			return None
 	
 	def get_bridge_IP(self):
 		"""Attempts to automatically find a Hue Bridge on the network.
@@ -151,37 +164,37 @@ class HueController(object):
 			
 	def post_user(self):
 		"""Sends POST request to Hue Bridge to register a username and program."""
-		pass
-		# url = 'http://' + self.IP + '/api' 
-		# r = json.dumps({'devicetype':'Python Hue Controller', 'username':self.userName}).encode('utf-8')
-		# req = urllib.request.Request(url, data=r, method='POST')
-		# with urllib.request.urlopen(req) as connection:
-			# response = connection.read()	
-		# return json.loads(str(response, encoding='utf-8'))	
+		
+		url = 'http://' + self.IP + '/api' 
+		r = json.dumps({'devicetype':'Python Hue Controller', 'username':self.userName}).encode('utf-8')
+		req = urllib.request.Request(url, data=r, method='POST')
+		with urllib.request.urlopen(req) as connection:
+			response = connection.read()	
+		return json.loads(str(response, encoding='utf-8'))	
 
 	def register_user(self):
 		"""Registers a username with the Philips hue. Will prompt user to push
 		the link button on the Bridge if needed."""
-		pass
-		# response = self.post_user()
-		# for line in response:
-			# for key in line:
-				# if 'success' in key:
-					# return True
-				# if 'error' in key:
-					# errorType = line['error']['type']
-					# if errorType == 101:
-						# logger.warning(
-							# 'Bridge link button has not been pressed.')
-						# logger.warning(
-							# 'Press the link button and hit enter to continue.')
-						# input()
-						# return self.register_user()
-					# else:
-						# logger.critical(
-							# 'Error registering username. Error type: {}'.format(
-								# errorType))
-						# return False
+		
+		response = self.post_user()
+		for line in response:
+			for key in line:
+				if 'success' in key:
+					return True
+				if 'error' in key:
+					errorType = line['error']['type']
+					if errorType == 101:
+						logger.warning(
+							'Bridge link button has not been pressed.')
+						logger.warning(
+							'Press the link button and hit enter to continue.')
+						input()
+						return self.register_user()
+					else:
+						logger.critical(
+							'Error registering username. Error type: {}'.format(
+								errorType))
+						return False
 		
 	def get_new_lights(self):
 		"""Instructs the Hue Bridge to search for new Hue lights.
@@ -193,23 +206,20 @@ class HueController(object):
 		the command must be run again.
 		"""
 		logger.info('Instructing Bridge to search for new lights.')
-		pass
-		# url = 'http://' + self.IP + '/api/' + self.userName + '/lights'
-		# req = urllib.request.Request(url, method='POST')
-		# with urllib.request.urlopen(req) as connection:
-			# response = connection.read()
-		# logger.debug(response)
-		# connection.close()
+		url = 'http://' + self.IP + '/api/' + self.userName + '/lights'
+		req = urllib.request.Request(url, method='POST')
+		with urllib.request.urlopen(req) as connection:
+			response = connection.read()
+		logger.debug(response)
+		connection.close()
 		
 	def set_state(self, state):
 		"""Accepts a state (type: dictionary) and applies it to all Hue lights."""
 		logger.debug('Setting lights to {}'.format(state))
-		pass
-		# try:
-			# pass
-			# #response = self.hue.set_group(0, state)
-			# #logger.debug(response)
-		# except Exception as e:
-			# logger.error('Received Exception, {}'.format(e))
-			# logger.error('Unable to connect to Hue Bridge. Check network connection.')
+		try:
+			response = self.hue.set_group(0, state)
+			logger.debug(response)
+		except Exception as e:
+			logger.error('Received Exception, {}'.format(e))
+			logger.error('Unable to connect to Hue Bridge. Check network connection.')
 	

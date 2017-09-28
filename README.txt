@@ -1,4 +1,4 @@
-  _    _         __      ___                 _          _           _   
+﻿  _    _         __      ___                 _          _           _   
  | |  | |        \ \    / (_)               | |   /\   | |         | |  
  | |__| |_   _  __\ \  / / _ ___ _   _  __ _| |  /  \  | | ___ _ __| |_ 
  |  __  | | | |/ _ \ \/ / | / __| | | |/ _` | | / /\ \ | |/ _ \ '__| __|
@@ -11,14 +11,22 @@ OSIsoft, LLC
 July 2014
 ---------------------------
 
+Last update: Sept. 2017 - JDryden
 
 HueVisualAlert controls a Philips Hue system to serve as a visual alerting 
 system for the Technical Support phone queue. 
 
+Compatibility tested with Python 3.5.4.
+
+Requires modules from pip:
+ - requests
+ - requests-negotiate-sspi
+
 This program can be run directly by invoking "python HueVisualAlert.py" in 
-the command line. For production, it was compiled into a Windows Executable
-using py2exe (info at http://py2exe.org ). See comments at beginning of 
-setup.py for directions on compiling into executable.
+the command line. For production, it can be compiled to a Windows executable
+using PyInstaller: http://www.pyinstaller.org/
+
+Invoke "pyinstaller HueVisualAlert.py --onefile" to compile to exe.
 
 HueVisualAlert uses the phue module by Nathanaël Lécaudé. More info can be
 found at https://github.com/studioimaginaire/phue

@@ -13,13 +13,16 @@ Philips Electronics N.V. See www.meethue.com for more information.
 """
 
 import huecontroller
+from PhoneStatsAPI import PhoneStatsAPI
 import logging
 import atexit
+import datetime
 import time
 import json
 import sys
 import re
 import os
+import calendar
 
 args = set(sys.argv)
 if '-d' in args or '--debug' in args:
@@ -35,11 +38,11 @@ if '--stop' in args:
 else:
 	STOP = False
 
-config = {
+default_config = {
 	'manualBridgeIP': None,
 	'delayTime': 1,
-	'phoneQueueURL': 'http://osi-cc100:9080/stats',
-	'callPattern': r'(\d*) ready .*?(\d*) CALLS WAITING FOR (\d*):(\d*)',
+	'phoneQueueURL': 'http://tsdata/api/incontact/huedata/fl_english_ib',
+	'phoneQueueTimeout': 15,
 	'lightStates': 
 		{
 		'red': 			{'on': True, 'bri': 200, 'sat': 255, 'transitiontime': 4, 'xy': [0.8, 0.3]},
@@ -59,17 +62,30 @@ if os.path.isfile('config.json'):
 	with open('config.json') as f:
 		try:
 			config = json.loads(f.read())
-			logger.debug('Successfully loaded configuration.')
+			logger.debug('Successfully loaded configuration file.')
 		except:
 			logger.warning('Failed to load from config.json, using default config.')
 			logger.warning('config.json may be corrupted. Delete config.json to create default config file.')
+			config = default_config
 			time.sleep(5)
+	config_valid = True
+	for k in default_config.keys():
+		if k not in config.keys():
+			config_valid = False
+			logger.warning("Config file missing key '" + k + '"')
+			config[k] = default_config[k]
+	if not config_valid:
+		logger.warning('Config file does not contain all keys expected.')
+		logger.warning('Using default values for missing configuration options.')
+		
 else:
 	logger.warning('No config.json file found. Creating one with default values.')
+	config = default_config
 	with open('config.json', mode='w') as f:
-		f.write(json.dumps(config, indent=4))
+		f.write(json.dumps(default_config, indent=4))
+		
 
-
+			
 class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 	"""
 	Monitors the Tech Support phone queue and sends light state commands
@@ -79,9 +95,7 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 	
 	def __init__(self, controller):
 		huecontroller.BaseURLMonitor.__init__(self, controller)
-		self.URL = config['phoneQueueURL']
-		callPattern = config['callPattern']
-		self.callPatternCompiled = re.compile(callPattern, re.DOTALL)
+		self.phoneStatsAPI = PhoneStatsAPI(config['phoneQueueURL'], timeout=config['phoneQueueTimeout'])
 		self.states = config['lightStates']
 		self.state = self.states['allOn']
 		self.status = ''
@@ -90,27 +104,6 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		self.maxDisconnectTime = 15
 		self.tic = time.time()
 		atexit.register(self.reset_lights)
-		
-	def get_phone_data(self):
-		"""Gets the state of the North America English tech support phone
-		queue.
-		
-		Returns ready, calls, timeSeconds, connectionFailed
-		"""
-		
-		logger.debug('Accessing source URL...')		
-		rawData = str(self.open_url(self.URL))
-		try:
-			ready, calls, minutes, seconds = self.callPatternCompiled.search(rawData).groups()
-		except:
-			logger.warning('CANNOT CONNECT TO PHONE QUEUE STATUS PAGE')
-			logger.warning('URL: {} Check network connection and destination URL.'.format(self.URL))
-			return None, None, None, True
-		logger.debug('Success.')
-		self.status = ' {0:s} calls waiting for {1:s}:{2:s}, {3:s} ready'.format(calls, minutes, seconds, ready)
-		logger.info(self.status)
-		timeSeconds = int(minutes)*60 + int(seconds)
-		return int(ready), int(calls), timeSeconds, False
 	
 	def calculate_points(self, calls, waitTime):
 		"""Determine call system priority points based on # of calls waiting
@@ -173,7 +166,7 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			self.standby = False
 			return self.standby
 		points = 0
-		ready, calls, timeSeconds, connectFailed = self.get_phone_data()
+		ready, calls, timeSeconds, connectFailed = self.phoneStatsAPI.get_stats()
 		if connectFailed:
 			self.failCount += 1
 		else:
@@ -198,7 +191,6 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			pass
 			
 if __name__ == '__main__':
-	import huecontroller
 	controller = huecontroller.HueController(
 		ip=config['manualBridgeIP'], username='ositechsupport')
 	monitor = PhoneStatusMonitor(controller)

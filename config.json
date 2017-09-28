@@ -1,88 +1,88 @@
 {
-    "delayTime": 1,
+    "phoneQueueTimeout": 15,
     "lightStates": {
-        "allOff": {
-            "on": false
-        },
-        "allOn": {
-            "transitiontime": 2,
-            "bri": 50,
-            "ct": 250,
-            "on": true,
-            "sat": 255
-        },
-        "greenYellow": {
-            "transitiontime": 4,
-            "bri": 200,
-            "xy": [
-                0.7,
-                0.7
-            ],
-            "on": true,
-            "sat": 255
-        },
-        "noConnect": {
-            "transitiontime": 4,
-            "bri": 150,
-            "xy": [
-                0.6,
-                0.0
-            ],
-            "on": true,
-            "sat": 255
-        },
-        "red": {
-            "transitiontime": 4,
-            "bri": 200,
-            "xy": [
-                0.8,
-                0.3
-            ],
-            "on": true,
-            "sat": 255
-        },
-        "green": {
-            "transitiontime": 4,
-            "bri": 150,
-            "xy": [
-                0.5,
-                0.8
-            ],
-            "on": true,
-            "sat": 255
-        },
-        "blue": {
-            "transitiontime": 4,
-            "bri": 150,
-            "xy": [
-                0.1,
-                0.0
-            ],
-            "on": true,
-            "sat": 255
-        },
-        "yellow": {
-            "transitiontime": 4,
-            "bri": 200,
-            "xy": [
-                0.55,
-                0.46
-            ],
-            "on": true,
-            "sat": 255
-        },
         "orange": {
-            "transitiontime": 4,
-            "bri": 200,
+            "on": true,
             "xy": [
                 0.7,
                 0.4
             ],
+            "sat": 255,
+            "transitiontime": 4,
+            "bri": 200
+        },
+        "allOff": {
+            "on": false
+        },
+        "red": {
             "on": true,
-            "sat": 255
+            "xy": [
+                0.8,
+                0.3
+            ],
+            "sat": 255,
+            "transitiontime": 4,
+            "bri": 200
+        },
+        "noConnect": {
+            "on": true,
+            "xy": [
+                0.6,
+                0.0
+            ],
+            "sat": 255,
+            "transitiontime": 4,
+            "bri": 150
+        },
+        "blue": {
+            "on": true,
+            "xy": [
+                0.1,
+                0.0
+            ],
+            "sat": 255,
+            "transitiontime": 4,
+            "bri": 150
+        },
+        "green": {
+            "on": true,
+            "xy": [
+                0.5,
+                0.8
+            ],
+            "sat": 255,
+            "transitiontime": 4,
+            "bri": 150
+        },
+        "greenYellow": {
+            "on": true,
+            "xy": [
+                0.7,
+                0.7
+            ],
+            "sat": 255,
+            "transitiontime": 4,
+            "bri": 200
+        },
+        "allOn": {
+            "on": true,
+            "ct": 250,
+            "sat": 255,
+            "transitiontime": 2,
+            "bri": 50
+        },
+        "yellow": {
+            "on": true,
+            "xy": [
+                0.55,
+                0.46
+            ],
+            "sat": 255,
+            "transitiontime": 4,
+            "bri": 200
         }
     },
-    "phoneQueueURL": "http://osi-cc100:9080/stats",
-    "callPattern": "(\\d*) ready .*?(\\d*) CALLS WAITING FOR (\\d*):(\\d*)",
-    "manualBridgeIP": null
+    "manualBridgeIP": null,
+    "delayTime": 1,
+    "phoneQueueURL": "http://tsdata/api/incontact/huedata/fl_english_ib"
 }
