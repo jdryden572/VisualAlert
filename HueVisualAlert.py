@@ -23,6 +23,9 @@ import sys
 import re
 import os
 import calendar
+# These two needed for Negotiate auth to work after being build by pyinstaller
+from multiprocessing import Queue
+import win32timezone
 
 args = set(sys.argv)
 if '-d' in args or '--debug' in args:
@@ -41,7 +44,8 @@ else:
 default_config = {
 	'manualBridgeIP': None,
 	'delayTime': 1,
-	'phoneQueueURL': 'http://tsdata/api/incontact/huedata/fl_english_ib',
+	'callQueueURL': 'http://tsdata/api/incontact/huedata/fl_english_ib',
+	'voicemailQueueURL': 'http://tsdata/api/incontact/huedata/VM_English',
 	'phoneQueueTimeout': 15,
 	'lightStates': 
 		{
@@ -95,7 +99,8 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 	
 	def __init__(self, controller):
 		huecontroller.BaseURLMonitor.__init__(self, controller)
-		self.phoneStatsAPI = PhoneStatsAPI(config['phoneQueueURL'], timeout=config['phoneQueueTimeout'])
+		self.callQueueAPI = PhoneStatsAPI(config['callQueueURL'], timeout=config['phoneQueueTimeout'])
+		self.voicemailQueueAPI = PhoneStatsAPI(config['voicemailQueueURL'], timeout=config['phoneQueueTimeout'])
 		self.states = config['lightStates']
 		self.state = self.states['allOn']
 		self.status = ''
@@ -104,6 +109,32 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		self.maxDisconnectTime = 15
 		self.tic = time.time()
 		atexit.register(self.reset_lights)
+	
+	def get_new_stats(self):
+		"""Get the latest stats from the queue API endpoints. Combine
+		phone and voicemail to show the total call number and longest
+		wait time.
+		"""
+		phoneReady, phoneCalls, phoneTimeSeconds, phoneConnectFailed = self.callQueueAPI.get_stats()
+		vmReady, vmCalls, vmTimeSeconds, vmConnectFailed = self.voicemailQueueAPI.get_stats()
+		connectFailed = phoneConnectFailed and vmConnectFailed
+		if connectFailed:
+			ready = None
+			calls = None
+			timeSeconds = None
+		elif vmConnectFailed:
+			ready = phoneReady
+			calls = phoneCalls
+			timeSeconds = phoneTimeSeconds
+		elif phoneConnectFailed:
+			ready = vmReady
+			calls = vmCalls
+			timeSeconds = vmTimeSeconds
+		else:
+			ready = phoneReady
+			calls = phoneCalls + vmCalls
+			timeSeconds = max(phoneTimeSeconds, vmTimeSeconds)
+		return ready, calls, timeSeconds, connectFailed
 	
 	def calculate_points(self, calls, waitTime):
 		"""Determine call system priority points based on # of calls waiting
@@ -166,7 +197,7 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			self.standby = False
 			return self.standby
 		points = 0
-		ready, calls, timeSeconds, connectFailed = self.phoneStatsAPI.get_stats()
+		ready, calls, timeSeconds, connectFailed = self.get_new_stats()
 		if connectFailed:
 			self.failCount += 1
 		else:
